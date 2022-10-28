@@ -36,7 +36,7 @@
 #include "bsp.h"
 #include "chip.h"
 
-#include "ciaa.h"
+#include "poncho.h"
 
 
 /* === Definicion y Macros privados ======================================== */
@@ -59,36 +59,27 @@ static struct placa_s placa = {0};
 
 placa_p crearplaca(void) {
 
-    Chip_SCU_PinMuxSet(LED_R_PORT, LED_R_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_INACT | LED_R_FUNC);
-    placa.led_azul = crearsalidadigital(LED_B_GPIO, LED_B_PIN);
-
-    Chip_SCU_PinMuxSet(LED_G_PORT, LED_G_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_INACT | LED_G_FUNC);
-
-
-    Chip_SCU_PinMuxSet(LED_B_PORT, LED_B_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_INACT | LED_B_FUNC);
-
-    /******************/
-    Chip_SCU_PinMuxSet(LED_1_PORT, LED_1_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_INACT | LED_1_FUNC);
-    placa.led_uno = crearsalidadigital(LED_1_GPIO, LED_1_PIN);
-
-    Chip_SCU_PinMuxSet(LED_2_PORT, LED_2_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_INACT | LED_2_FUNC);
-    placa.led_dos = crearsalidadigital(LED_2_GPIO, LED_2_PIN);
-
-    Chip_SCU_PinMuxSet(LED_3_PORT, LED_3_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_INACT | LED_3_FUNC);
-    placa.led_tres = crearsalidadigital(LED_3_GPIO, LED_3_PIN);
+    Chip_SCU_PinMuxSet(BUZZER_PORT, BUZZER_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_INACT | BUZZER_FUNC);
+    placa.sonido = crearsalidadigital(BUZZER_GPIO, BUZZER_PIN);
 
     /******************Definicion de entradas*/
-    Chip_SCU_PinMuxSet(TEC_1_PORT, TEC_1_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_PULLUP | TEC_1_FUNC);
-    placa.tecla_1 = crearentradadigital(TEC_1_GPIO,TEC_1_BIT);
+    Chip_SCU_PinMuxSet(KEY_F1_PORT, KEY_F1_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_PULLUP | KEY_F1_FUNC);
+    placa.config_tiempo = crearentradadigital(KEY_F1_GPIO,KEY_F1_BIT);
 
-    Chip_SCU_PinMuxSet(TEC_2_PORT, TEC_2_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_PULLUP | TEC_2_FUNC);
-    placa.tecla_2 = crearentradadigital(TEC_2_GPIO,TEC_2_BIT);
+    Chip_SCU_PinMuxSet(KEY_F2_PORT, KEY_F2_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_PULLUP | KEY_F2_FUNC);
+    placa.config_alarma = crearentradadigital(KEY_F2_GPIO,KEY_F2_BIT);
 
-    Chip_SCU_PinMuxSet(TEC_3_PORT, TEC_3_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_PULLUP | TEC_3_FUNC);
-    placa.tecla_3 = crearentradadigital(TEC_3_GPIO,TEC_3_BIT);
+    Chip_SCU_PinMuxSet(KEY_F3_PORT, KEY_F3_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_PULLUP | KEY_F3_FUNC);
+    placa.decrementar = crearentradadigital(KEY_F3_GPIO,KEY_F3_BIT);
 
-    Chip_SCU_PinMuxSet(TEC_4_PORT, TEC_4_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_PULLUP | TEC_4_FUNC);
-    placa.tecla_4 = crearentradadigital(TEC_4_GPIO,TEC_4_BIT);
+    Chip_SCU_PinMuxSet(KEY_F4_PORT, KEY_F4_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_PULLUP | KEY_F4_FUNC);
+    placa.incrementar = crearentradadigital(KEY_F4_GPIO,KEY_F4_BIT);
+
+    Chip_SCU_PinMuxSet(KEY_ACCEPT_PORT, KEY_ACCEPT_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_PULLUP | KEY_ACCEPT_FUNC);
+    placa.aceptar = crearentradadigital(KEY_ACCEPT_GPIO,KEY_ACCEPT_BIT);
+
+    Chip_SCU_PinMuxSet(KEY_CANCEL_PORT, KEY_CANCEL_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_PULLUP | KEY_CANCEL_FUNC);
+    placa.cancelar = crearentradadigital(KEY_CANCEL_GPIO,KEY_CANCEL_BIT);
    
     return &placa;
 }

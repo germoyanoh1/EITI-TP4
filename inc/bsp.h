@@ -47,15 +47,14 @@ extern "C" {
 /* == Declaraciones de tipos de datos publicos ============================= */
 
 typedef struct placa_s {
-    salida_digital_p led_azul;
-    salida_digital_p led_uno;
-    salida_digital_p led_dos;
-    salida_digital_p led_tres;
+    salida_digital_p sonido;
 
-    entrada_digital_p tecla_1;
-    entrada_digital_p tecla_2;
-    entrada_digital_p tecla_3;
-    entrada_digital_p tecla_4;
+    entrada_digital_p config_tiempo;
+    entrada_digital_p config_alarma;
+    entrada_digital_p decrementar;
+    entrada_digital_p incrementar;
+    entrada_digital_p aceptar;
+    entrada_digital_p cancelar;
 
 } const * placa_p;
 
