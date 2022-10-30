@@ -23,7 +23,7 @@
 #endif
 
 #ifndef ENTRADAS_INSTANCIAS
-    #define ENTRADAS_INSTANCIAS     4
+    #define ENTRADAS_INSTANCIAS     6
 #endif
 
 /* === Declaraciones de tipos de datos privados ============================ */

@@ -43,10 +43,20 @@
 #include "bsp.h"
 #include <stdbool.h>
 
+#include "chip.h"
+#include "poncho.h"
+
 /* === Macros definitions ====================================================================== */
 
-/*solo le asigna un nombre amigable a los numeros, que estan definidos en el manual de la placa*/
-/*para referirse, a los leds de salida, como a los pulsadores de entrada*/
+//Definimos los bits asociados a cada segmento para construir los numeros
+#define SEGMENT_A (1 << 0)
+#define SEGMENT_B (1 << 1)
+#define SEGMENT_C (1 << 2)
+#define SEGMENT_D (1 << 3)
+#define SEGMENT_E (1 << 4)
+#define SEGMENT_F (1 << 5)
+#define SEGMENT_G (1 << 6)
+#define SEGMENT_P (1 << 7)
 
 /* === Private data type declarations ========================================================== */
 
@@ -54,50 +64,97 @@
 
 /* === Private function declarations =========================================================== */
 
+static const uint8_t IMAGES[] = {
+    SEGMENT_A | SEGMENT_B | SEGMENT_C | SEGMENT_D | SEGMENT_E | SEGMENT_F,                  //=0
+    SEGMENT_B | SEGMENT_C,                                                                  //=1
+    SEGMENT_A | SEGMENT_B | SEGMENT_D | SEGMENT_E | SEGMENT_G,                              //=2
+    SEGMENT_A | SEGMENT_B | SEGMENT_C | SEGMENT_D | SEGMENT_G,                              //=3
+    SEGMENT_B | SEGMENT_C | SEGMENT_F | SEGMENT_G,                                          //=4
+    SEGMENT_A | SEGMENT_C | SEGMENT_D | SEGMENT_F | SEGMENT_G,                              //=5
+    SEGMENT_A | SEGMENT_C | SEGMENT_D | SEGMENT_E | SEGMENT_F | SEGMENT_G,                  //=6
+    SEGMENT_A | SEGMENT_B | SEGMENT_C,                                                      //=7
+    SEGMENT_A | SEGMENT_B | SEGMENT_C | SEGMENT_D | SEGMENT_E | SEGMENT_F | SEGMENT_G,      //=8
+    SEGMENT_A | SEGMENT_B | SEGMENT_C | SEGMENT_F | SEGMENT_G,                              //=9
+
+};
+
 /* === Public variable definitions ============================================================= */
 
 /* === Private variable definitions ============================================================ */
 
 /* === Private function implementation ========================================================= */
 
+void escribirnumero(uint8_t numero) {
+    Chip_GPIO_SetValue(LPC_GPIO_PORT, SEGMENTS_GPIO, IMAGES[numero]);
+}
+
+void seleccionardigito(uint8_t digito) {
+    Chip_GPIO_SetValue(LPC_GPIO_PORT, DIGITS_GPIO, (1 << digito));
+}
+
+void limpiarpantalla() {
+    Chip_GPIO_ClearValue(LPC_GPIO_PORT, DIGITS_GPIO, DIGITS_MASK);
+    Chip_GPIO_ClearValue(LPC_GPIO_PORT, SEGMENTS_GPIO, SEGMENTS_MASK);
+}
 /* === Public function implementation ========================================================= */
 
-int main(void) {
+int main(void) {   
 
-    int divisor  = 0;
+    uint8_t valor = 0;
+    uint8_t posicion = 0;
+    bool refrescar = true;
+
+    uint8_t pantalla[4]={1,2,3,4};
+    
     placa_p placa = crearplaca();
 
+
     while (true) {
-        /*********Programacion para encender el led BLUE, al mantener presionada la tecla 1*/
-        if (estadoentradadigital(placa->tecla_1)) {
-            activarsalidadigital(placa->led_azul); 
+
+        if (refrescar){
+            refrescar = false;
+            limpiarpantalla();
+            escribirnumero(pantala(posicion));
+            seleccionardigito(posicion);
+        }
+ 
+        
+        if (entradadigitalactiva(placa->config_tiempo)){
+            if (valor == 9){
+                valor = 0;
+            } else {
+                valor = valor + 1;
+            }
+            refrescar = true;
+        }
+
+        if (entradadigitalactiva(placa->config_alarma)){
+            if (valor == 0){
+                valor = 9;
+            } else {
+                valor = valor - 1;
+            }
+            refrescar = true;
+        }
+
+        if (entradadigitalactiva(placa->incrementar)){
+            if (posicion == 3){
+                posicion = 0;
+            } else {
+                posicion = posicion + 1;
+            }
+            refrescar = true;
+        }
+
+        if (entradadigitalactiva(placa->decrementar)){
+            if (posicion == 0){
+                posicion = 3;
+            } else {
+                posicion = posicion - 1;
+            }
+            refrescar = true;
         } 
-        else {
-            desactivarsalidadigital(placa->led_azul);
-        }
-
-        /*********Programacion para encender y apagar el led 1, cdo presiono la tecla 2*/
-
-        if(entradadigitalactiva(placa->tecla_2)){
-            cambiarsalidadigital(placa->led_uno);
-        }
-
-        /*********Codigo que enciende el led 2 con la tecla 3 y lo apaga con la tecla 4*/
-
-        if(estadoentradadigital(placa->tecla_3)){
-            activarsalidadigital(placa->led_dos);
-        }
-        if(estadoentradadigital(placa->tecla_4)){
-            desactivarsalidadigital(placa->led_dos);
-        }
-
-        /**********Divisor para encender y apagar el led 3 cdo el programa esta corriendo*/
-        divisor++;
-        if (divisor == 5) {
-            divisor = 0;
-            cambiarsalidadigital(placa->led_tres);
-        }
-
+        
         /***********Codigo perdida de tiempo para absorver el rebote al presionar teclas*/
         for (int index = 0; index < 100; index++) {
             for (int delay = 0; delay < 25000; delay++) {
