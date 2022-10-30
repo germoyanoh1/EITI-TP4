@@ -100,9 +100,9 @@ void limpiarpantalla() {
 
 int main(void) {   
 
-    uint8_t valor = 0;
+    //uint8_t valor = 0;
     uint8_t posicion = 0;
-    bool refrescar = true;
+    //bool refrescar = true;
 
     uint8_t pantalla[4]={1,2,3,4};
     
@@ -110,15 +110,17 @@ int main(void) {
 
 
     while (true) {
+        limpiarpantalla();
+        escribirnumero(pantalla[posicion]);
+        seleccionardigito(posicion);
 
-        if (refrescar){
-            refrescar = false;
-            limpiarpantalla();
-            escribirnumero(pantala(posicion));
-            seleccionardigito(posicion);
-        }
+        if (posicion == 3){
+                posicion = 0;
+            } else {
+                posicion = posicion + 1;
+            }
  
-        
+        /*
         if (entradadigitalactiva(placa->config_tiempo)){
             if (valor == 9){
                 valor = 0;
@@ -154,10 +156,10 @@ int main(void) {
             }
             refrescar = true;
         } 
-        
+        */
         /***********Codigo perdida de tiempo para absorver el rebote al presionar teclas*/
         for (int index = 0; index < 100; index++) {
-            for (int delay = 0; delay < 25000; delay++) {
+            for (int delay = 0; delay < 2500; delay++) {
                 __asm("NOP");
             }
         }
