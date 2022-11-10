@@ -54,6 +54,12 @@ static void inicializa_digitos(void);
 static void inicializa_segmentos(void);
 static void inicializa_buzzer(void);
 static void inicializa_teclas(void);
+
+static void inicializa_pantalla(void);
+static void limpiarpantalla(void);
+static void escribirnumero(uint8_t segmento); 
+static void seleccionardigito(uint8_t digito);
+
 /* === Definiciones de funciones privadas ================================== */
 void inicializa_digitos(void){
     Chip_SCU_PinMuxSet(DIGIT_1_PORT, DIGIT_1_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_INACT | DIGIT_1_FUNC);
@@ -128,15 +134,41 @@ void inicializa_teclas(void){
     Chip_SCU_PinMuxSet(KEY_CANCEL_PORT, KEY_CANCEL_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_PULLUP | KEY_CANCEL_FUNC);
     placa.cancelar = crearentradadigital(KEY_CANCEL_GPIO,KEY_CANCEL_BIT);
 }
+
+void inicializa_pantalla(void){
+    static const struct driver_pantalla_s driver_pantalla = {
+    .apagarpantalla = limpiarpantalla,
+    .encendersegmento = escribirnumero,
+    .encenderdigito = seleccionardigito,   
+    };
+    placa.pantalla = crearpantalla(4, &driver_pantalla);
+
+}
+
+void limpiarpantalla(void) {
+    Chip_GPIO_ClearValue(LPC_GPIO_PORT, DIGITS_GPIO, DIGITS_MASK);
+    Chip_GPIO_ClearValue(LPC_GPIO_PORT, SEGMENTS_GPIO, SEGMENTS_MASK);
+}
+
+void escribirnumero(uint8_t segmento) {
+    Chip_GPIO_SetValue(LPC_GPIO_PORT, SEGMENTS_GPIO, segmento);
+}
+
+void seleccionardigito(uint8_t digito) {
+    Chip_GPIO_SetValue(LPC_GPIO_PORT, DIGITS_GPIO, (1 << digito));
+}
+
 /* === Definiciones de funciones publicas ================================== */
 
 /* === Implementacion de funciones publicas ================================== */
 
 placa_p crearplaca(void) {
-
+    inicializa_digitos();
+    inicializa_segmentos();
     inicializa_buzzer();
     inicializa_teclas();
     
+    inicializa_pantalla();
    
     return &placa;
 }

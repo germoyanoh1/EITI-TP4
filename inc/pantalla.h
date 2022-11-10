@@ -58,9 +58,21 @@ extern "C" {
  //referencia a un descriptor para manejar un display de 7 segmentos
 typedef struct pantalla_s * pantalla_p;
 
+typedef void(*pantalla_limpiar_p)(void);
+
+typedef void(*pantalla_segmento_p)(uint8_t segmentos);
+
+typedef void(*pantalla_digito_p)(uint8_t digito);
+
+typedef struct driver_pantalla_s {
+    pantalla_limpiar_p apagarpantalla;
+    pantalla_segmento_p encendersegmento;
+    pantalla_digito_p encenderdigito;
+} const * driver_pantalla_p;
+
 /* === Declaraciones de variables publicas ================================= */
 
-pantalla_p crearpantalla (uint8_t digitos);
+pantalla_p crearpantalla (uint8_t digitos, driver_pantalla_p driver);
 
 void escribirpantallabcd(pantalla_p pantalla, uint8_t * numero, uint8_t tamano);
 

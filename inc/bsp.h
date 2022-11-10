@@ -42,7 +42,8 @@ extern "C" {
 
 /* === Definicion y Macros publicos ======================================== */
 
-#include <digital.h>
+#include "digital.h"
+#include "pantalla.h"
 
 /* == Declaraciones de tipos de datos publicos ============================= */
 
@@ -55,6 +56,8 @@ typedef struct placa_s {
     entrada_digital_p incrementar;
     entrada_digital_p aceptar;
     entrada_digital_p cancelar;
+
+    pantalla_p pantalla;
 
 } const * placa_p;
 

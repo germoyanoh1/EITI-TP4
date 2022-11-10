@@ -14,8 +14,6 @@
 /* === Inclusiones de cabeceras ============================================ */
 
 #include <pantalla.h>
-#include "chip.h"
-#include "poncho.h"
 #include <string.h>
 /* === Definicion y Macros privados ======================================== */
 
@@ -30,6 +28,7 @@ struct pantalla_s
     uint8_t digitos;
     uint8_t digito_activo;
     uint8_t memoria[MAX_DIGITOS_PANTALLA];
+    struct driver_pantalla_s driver;
 };
 
 
@@ -57,30 +56,20 @@ static const uint8_t IMAGEN[] = {
 
 /* === Definiciones de funciones privadas ================================== */
 
-void escribirnumero(uint8_t segmento) {
-    Chip_GPIO_SetValue(LPC_GPIO_PORT, SEGMENTS_GPIO, segmento);
-}
-
-void seleccionardigito(uint8_t digito) {
-    Chip_GPIO_SetValue(LPC_GPIO_PORT, DIGITS_GPIO, (1 << digito));
-}
-
-void limpiarpantalla() {
-    Chip_GPIO_ClearValue(LPC_GPIO_PORT, DIGITS_GPIO, DIGITS_MASK);
-    Chip_GPIO_ClearValue(LPC_GPIO_PORT, SEGMENTS_GPIO, SEGMENTS_MASK);
-}
-
 /* === Definiciones de funciones publicas ================================== */
 
-pantalla_p crearpantalla (uint8_t digitos){
+pantalla_p crearpantalla (uint8_t digitos, driver_pantalla_p driver){
     pantalla_p pantalla = instancias;
 
     pantalla->digitos = digitos;
     pantalla->digito_activo = digitos - 1;
-
     memset(pantalla->memoria, 0, sizeof(pantalla->memoria));
 
-    limpiarpantalla();
+    pantalla->driver.apagarpantalla = driver->apagarpantalla;
+    pantalla->driver.encendersegmento = driver->encendersegmento;
+    pantalla->driver.encenderdigito = driver->encenderdigito;
+    pantalla->driver.apagarpantalla();
+    
     return pantalla;
 }
 
@@ -93,15 +82,15 @@ void escribirpantallabcd(pantalla_p pantalla, uint8_t * numero, uint8_t tamano){
 };
 
 void refrescarpantalla(pantalla_p pantalla){
-    limpiarpantalla();
+    pantalla->driver.apagarpantalla();
     if (pantalla->digito_activo == pantalla->digitos - 1){
         pantalla->digito_activo = 0;
     } else {
         pantalla->digito_activo = pantalla->digito_activo + 1;
     }
-    escribirnumero(pantalla->memoria[pantalla->digito_activo]);
-    seleccionardigito(pantalla->digito_activo);
- 
+    pantalla->driver.encendersegmento(pantalla->memoria[pantalla->digito_activo]);
+    pantalla->driver.encenderdigito(pantalla->digito_activo);
+    
 
 };
 

@@ -43,6 +43,8 @@
 #include "bsp.h"
 #include <stdbool.h>
 #include "pantalla.h"
+#include "chip.h"
+#include "poncho.h"
 /* === Macros definitions ====================================================================== */
 
 
@@ -61,18 +63,18 @@
 
 /* === Public function implementation ========================================================= */
 
-int main(void) {   
+int main(void) {
+    
+    
     uint8_t numero[4]={1,2,3,4};
     
     placa_p placa = crearplaca();
 
-    pantalla_p pantalla = crearpantalla(4);
-
-    escribirpantallabcd(pantalla, numero, sizeof(numero));
+    escribirpantallabcd(placa->pantalla, numero, sizeof(numero));
 
     while (true) {
 
-        refrescarpantalla(pantalla);
+        refrescarpantalla(placa->pantalla);
 
         /*
         if (entradadigitalactiva(placa->config_tiempo)){
